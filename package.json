@@ -1,12 +1,16 @@
 {
-  "name": "violet-fox",
+  "name": "my-proxy-project",
   "version": "1.0.0",
-  "private": true,
-  "main": "server.js",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "@mercuryworkshop/bare-mux": "^2.1.2",
+    "@mercuryworkshop/epoxy-transport": "^3.0.0",
+    "@titaniumnetwork-dev/ultraviolet": "^3.2.7",
+    "express": "^4.19.2",
+    "@mercuryworkshop/wisp-js": "^1.1.0"
   }
 }
