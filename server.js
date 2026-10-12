@@ -4,6 +4,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.disable("x-powered-by");
+app.disable("etag");
+
+app.use(express.json({ limit: "10kb" }));
 
 // Violet Fox homepage
 app.get("/", (req, res) => {
@@ -29,12 +32,8 @@ app.get("/", (req, res) => {
           width: 90%;
           max-width: 600px;
         }
-        h1 {
-          font-size: 56px;
-        }
-        p {
-          color: #aaa3bd;
-        }
+        h1 { font-size: 56px; }
+        p { color: #aaa3bd; }
         .status {
           padding: 15px;
           border: 1px solid #383044;
@@ -46,7 +45,7 @@ app.get("/", (req, res) => {
     <body>
       <main>
         <h1>🦊 Violet Fox</h1>
-        <p>Your browsing project starts here.</p>
+        <p>Your privacy-focused browsing project.</p>
         <div class="status">Backend is online</div>
       </main>
     </body>
@@ -67,7 +66,46 @@ app.get("/api", (req, res) => {
   res.json({
     name: "Violet Fox",
     status: "online",
-    version: "1.0.0"
+    version: "1.1.0"
+  });
+});
+
+// Validate a URL without visiting it
+app.get("/validate", (req, res) => {
+  const input = req.query.url;
+
+  if (typeof input !== "string" || !input.trim()) {
+    return res.status(400).json({
+      error: "Please provide a URL using ?url="
+    });
+  }
+
+  let parsed;
+
+  try {
+    parsed = new URL(input);
+  } catch {
+    return res.status(400).json({
+      error: "Invalid URL"
+    });
+  }
+
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    return res.status(400).json({
+      error: "Only HTTP and HTTPS URLs are supported"
+    });
+  }
+
+  if (parsed.username || parsed.password) {
+    return res.status(400).json({
+      error: "URLs containing embedded credentials are not allowed"
+    });
+  }
+
+  res.json({
+    valid: true,
+    protocol: parsed.protocol,
+    hostname: parsed.hostname
   });
 });
 
